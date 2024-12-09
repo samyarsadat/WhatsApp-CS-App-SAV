@@ -1,6 +1,6 @@
 <h1>WhatsApp Customer Support Application</h1>
 
-OPEN-SOURCED VERSION!<br>
+SOURCE-AVAILABLE VERSION!<br>
 Written and developed by Samyar Sadat Akhavi.
 <br><br>
 
