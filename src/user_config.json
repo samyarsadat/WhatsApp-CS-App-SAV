@@ -1,0 +1,41 @@
+{
+    "SERVER_NAME": "optimum-socially-collie.ngrok-free.app",
+    "SECURITY_EMAIL_SENDER_NAME": "WhatsApp Client",
+    "SECURITY_EMAIL_SENDER": "account@gigawhat.net",
+    "WAAPI_WHATSAPP_FROM_NUMBER": "",
+    "WAAPI_REQUEST_BASIC_AUTH_USER": "",
+    "WAAPI_REQUEST_BASIC_AUTH_PASS_HASH": "",
+    "ALLOWED_FILE_EXTENSIONS": [
+        "jpg",
+        "jpeg",
+        "png",
+        "aac",
+        "amr",
+        "mp3",
+        "mp4",
+        "opus",
+        "3gpp",
+        "webp",
+        "txt",
+        "pdf",
+        "gif",
+        "docx",
+        "pptx",
+        "xlsx",
+        "doc",
+        "ppt",
+        "xls"
+    ],
+    "ANALYTICS_PROPERTY_ID": "XXXXXXXXX",
+    "ANALYTICS_TAG_ID": "G-XXXXXXXXXX",
+    "MAX_FILE_UPLOAD_SIZE_MB": 16,
+    "SUPPORTED_LANGS": [
+        "tr_TR"
+    ],
+    "DEFAULT_LANG": "tr_TR",
+    "MAX_AGENTS_PER_CUSTOMER": 2,
+    "MAX_CUSTOMERS_PER_DAY": 99,
+    "MULTISERVER_SERVERS_LIST": {
+        "Server 1": "https://optimum-socially-collie.ngrok-free.app"
+    }
+}

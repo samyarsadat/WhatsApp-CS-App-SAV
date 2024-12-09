@@ -1,0 +1,39 @@
+{% extends "base_templates/admin_base.html" %}
+{% from "macros.jinja" import render_field_with_errors_nl %}
+
+{% block act_body %}
+<h1 class="align-top mb-4">{{UI_ELEMENTS_TEXT.ADMIN_NAV_AGENTS}}</h1>
+
+<form method="post" action="{{url_for("admin_pages.manage_agents")}}">
+    {{form.hidden_tag()}}
+
+    {{form.agent_username.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.agent_username, 3, "", class="form-control rounded-3")}}
+
+    {{form.agent_type.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.agent_type, 3, "", class="form-select rounded-3")}}
+
+    {{form.agent_phone_number.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.agent_phone_number, 3, "", class="form-control rounded-3")}}
+
+    {{form.agent_email.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.agent_email, 3, "", class="form-control rounded-3")}}
+
+    {{form.agent_password.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.agent_password, 4, "", class="form-control rounded-3")}}
+
+    {{render_field_with_errors_nl(form.submit, 5, "floating", class="w-100 mt-2 mb-2 btn btn-lg rounded-3 btn-outline-success")}}
+</form>
+
+<h3 class="align-top mb-4">{{UI_ELEMENTS_TEXT.ADMIN_AGENTS_DEL}}</h3>
+<ul class="list-group mb-5">
+{% for agent in agents %}
+    <li class="list-group-item"><div class="d-inline align-middle">{{loop.index}}. {{agent.name}} (Type: {{agent.type}}, {% if agent.type == "fs_user" %}User ID: {{agent.fs_user_id}}{% else %}Phone: {{agent.phone_number}}{% endif %}, ID: {{agent.id}})</div> <a class="float-end btn-outline-danger btn btn-sm" href="{{url_for("admin_pages.delete_agent", id=agent.id)}}">DELETE</a><br></li>
+{% else %}
+<p>{{UI_ELEMENTS_TEXT.ADMIN_NO_AGENTS}}</p>
+{% endfor %}
+</ul>
+
+<div class="mb-3">ㅤ</div>
+{% endblock %}
+

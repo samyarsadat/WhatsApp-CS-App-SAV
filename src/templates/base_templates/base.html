@@ -1,0 +1,99 @@
+<!-- 
+    WhatsApp messaging client project
+    Main HTML base template file
+    Written by Samyar Sadat Akhavi, 2023
+
+    Project Information
+    Developer:        Samyar Sadat Akhavi
+    Start Date:       09/06/2023
+
+    Beware! 
+    This website uses Jinja 2 and server-side rendering so page source will look very messy.
+-->
+
+{% cache RENDER_CACHE_TIMEOUT %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include "base_templates/template_modules/head.html" %}
+        {% endcache %}
+
+        {% include "base_templates/template_modules/google_analytics.html" %}
+
+        <!-- Head block -->
+        {% block head %}
+        {% endblock %}
+
+        <!-- Page title block -->
+        <title>{% block title %}{% endblock %} | {{WEBSITE_DISPLAY_NAME}}</title>
+
+        {% cache RENDER_CACHE_TIMEOUT %}
+    </head>
+
+    <body class="bg-light">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-2">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="{{url_for("index")}}" class="text-decoration-none">
+                        <img src="{{url_for("static", filename=WEBSITE_NAV_LOGO)}}" class="" height="40" alt="{{WEBSITE_DISPLAY_NAME}}">
+                    </a>
+                    {% endcache %}
+
+                    <div class="d-inline">
+                        <a href="{{url_for("index")}}" class="link-light text-decoration-none ps-2 small fw-bold">{{WEBSITE_DISPLAY_NAME}}</a>
+                        <p class="d-inline" style="font-size: 14px;"><em>{{PROGRAM_VERSION}}</em></p>
+                    </div>
+
+                    {% include "base_templates/template_modules/lang_dropdown.html" %}
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                {% include "base_templates/template_modules/main_nav.html" %}
+            </div>
+        </nav>
+
+        {% include "base_templates/template_modules/flash_messages.html" %}
+        
+        <!-- Body block -->
+        {% block body %}
+        {% endblock %}
+
+        <!-- Footer -->
+        <footer class="d-flex flex-wrap py-3 bg-dark {% block footer %}{% endblock %}">
+            {% cache RENDER_CACHE_TIMEOUT %}
+            <div class="container">
+                <div class="text-center text-lg-start d-lg-inline d-block">
+                    <a href="{{url_for("index")}}" class="text-decoration-none">
+                        <img src="{{url_for("static", filename=WEBSITE_FOOTER_LOGO)}}" width="30">
+                    </a>
+                    {% endcache %}
+                        
+                    <!-- <a href="url_for("privacy_policy")" class="ms-1 text-decoration-none d-none d-lg-inline h-color-white">{{UI_ELEMENTS_TEXT.FOOTER_PRIVACY_POLICY}}</a> -->
+                    <span class="text-white ms-2">{{UI_ELEMENTS_TEXT.FOOTER_COPYRIGHT}}</span>
+                </div>
+            
+                <!-- 
+                <div class="float-none d-lg-inline d-block float-lg-end mt-lg-0 mt-3 text-center">
+                    % include "base_templates/template_modules/social_links.html" %
+                </div>
+
+                <div class="d-block d-lg-none text-center mt-3">
+                    <a href="url_for("privacy_policy")" class="text-decoration-none h-color-white">{{UI_ELEMENTS_TEXT.FOOTER_PRIVACY_POLICY}}</a>
+                </div> 
+                -->
+            </div>
+        </footer>
+
+        {% include "base_templates/template_modules/end.html" %}
+
+        <!-- End block -->
+        {% block end %}
+        {% endblock %}
+    </body>
+</html>
+
+

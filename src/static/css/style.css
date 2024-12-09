@@ -1,0 +1,184 @@
+/*
+    WhatsApp messaging client project
+    Main CSS3 styling file
+    Written by Samyar Sadat Akhavi, 2023
+
+    Project Information
+    Developer:        Samyar Sadat Akhavi
+    Start Date:       09/06/2023
+*/
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+  
+::-webkit-scrollbar-track {
+    background: #dadada6c; 
+}
+   
+::-webkit-scrollbar-thumb {
+    background: #ebebebb2; 
+}
+  
+::-webkit-scrollbar-thumb:hover {
+    background: #a3b2c7be; 
+}
+
+
+.w-40 {
+    width: 40%;
+}
+
+.w-70 {
+    width: 70%;
+}
+
+.w-80 {
+    width: 80%;
+}
+
+.w-85 {
+    width: 85%;
+}
+
+.w-90 {
+    width: 90%;
+}
+
+.h-80 {
+    height: 80%;
+}
+
+.h-85 {
+    height: 85%;
+}
+
+.h-90 {
+    height: 90%;
+}
+
+.h-95 {
+    height: 95%;
+}
+
+.h-86vh {
+    height: 86vh;
+}
+
+.h-opacity-50:hover {
+    transition: 0.3s;
+    opacity: 50%;
+}
+
+.h-opacity-50 {
+    transition: 0.3s;
+}
+
+.h-msg-user:hover {
+    background-color: #ffffff21;
+    cursor: pointer;
+}
+
+.h-msg-user {
+    background-color: #ffffff00;
+}
+
+.h-color-white:hover {
+    transition: 0.3s;
+    color: white;
+}
+
+.h-color-white {
+    transition: 0.3s;
+    color: gray;
+}
+
+.carousel-caption {
+    bottom: 8rem;
+    z-index: 10;
+}
+
+.carousel-item {
+    height: 28rem;
+}
+
+.carousel-item>img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    min-width: 100%;
+    height: 28rem;
+}
+
+.pixelated {
+    image-rendering: pixelated;
+}
+
+.shadow-info {
+    box-shadow: 0 0 5px #0dcaf04b, 0 0 15px #4dd5ff91, 0 0 20px #4dd5ff91;
+}
+
+.shadow-success {
+    box-shadow: 0 0 1rem #0ac442;
+}
+
+.shadow-danger {
+    box-shadow: 0 0 1rem #ff0019;
+}
+
+.shadow-dark {
+    box-shadow: 0 0 1rem #1b1b1b70;
+}
+
+.barcode {
+    font-family: "Libre Barcode 39", cursive;
+    font-size: 60px;
+    margin: 0;
+}
+
+.label-upload-button {
+    color: white;
+    cursor: pointer;
+}
+
+.border-opacity-10 {
+    --bs-border-opacity: 0.1;
+}
+
+
+.fade-in-flash {
+    animation: fadeInFlash linear 0.5s;
+    margin-top: 30px;
+}
+
+@keyframes fadeInFlash {
+    0% {
+        opacity: 0;
+        margin-top: -50px;
+    }
+
+    100% {
+        opacity: 1;
+        margin-top: 30px;
+    }
+}
+
+
+.msg-box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.msg-box .msg-header {
+    flex: 0 1 auto;
+}
+
+.msg-box .msg-view {
+    flex: 1 1 auto;
+}
+
+.msg-box .msg-compose {
+    flex: 0 1 40px;
+}
+

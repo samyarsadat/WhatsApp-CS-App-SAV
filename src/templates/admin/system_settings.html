@@ -1,0 +1,55 @@
+{% extends "admin/master.html" %}
+{% from "macros.jinja" import render_field_with_errors_nl %}
+
+{% block body %}
+<h2 class="mt-4 mb-4">System Settings</h2>
+
+<form method="post" action="{{url_for("sys-settings.index")}}">
+    {{form.hidden_tag()}}
+
+    {{form.waapi_callback_user.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.waapi_callback_user, 4, "", class="form-control rounded-3")}}
+
+    {{form.waapi_callback_pass.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.waapi_callback_pass, 4, "", class="form-control rounded-3")}}
+
+    {{form.waapi_send_phone_num.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.waapi_send_phone_num, 4, "", class="form-control rounded-3")}}
+
+    {{form.waapi_api_base_url.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.waapi_api_base_url, 4, "", class="form-control rounded-3")}}
+
+    {{form.waapi_api_api_key.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.waapi_api_api_key, 4, "", class="form-control rounded-3")}}
+
+    {{form.mailjet_api_key.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.mailjet_api_key, 4, "", class="form-control rounded-3")}}
+
+    {{form.mailjet_api_secret.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.mailjet_api_secret, 4, "", class="form-control rounded-3")}}
+
+    {{form.security_mail_email.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.security_mail_email, 4, "", class="form-control rounded-3")}}
+
+    {{form.security_mail_sender_name.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.security_mail_sender_name, 4, "", class="form-control rounded-3")}}
+
+    {{form.ga_tag_id.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.ga_tag_id, 4, "", class="form-control rounded-3")}}
+
+    {{form.ga_property_id.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.ga_property_id, 4, "", class="form-control rounded-3")}}
+
+    {{form.max_customers_per_day.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.max_customers_per_day, 4, "", class="form-control rounded-3")}}
+
+    {{form.max_agents_per_customer.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.max_agents_per_customer, 4, "", class="form-control rounded-3")}}
+
+    {{form.max_file_upload_size_mb.label(class="form-label")}}
+    {{render_field_with_errors_nl(form.max_file_upload_size_mb, 4, "", class="form-control rounded-3")}}
+
+    {{render_field_with_errors_nl(form.submit, 5, "floating", class="w-100 mt-2 mb-2 btn btn-lg rounded-3 btn-outline-success")}}
+</form>
+{% endblock %}
+

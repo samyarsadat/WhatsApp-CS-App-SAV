@@ -1,0 +1,6 @@
+# Empty (example) translation overrides for Flask-Security.
+# Copyright (C) 2023 Samyar Sadat Akhavi
+# Samyar Sadat Akhavi <samyarsadat@gigawhat.net>, 2023.
+#
+msgid ""
+msgstr ""

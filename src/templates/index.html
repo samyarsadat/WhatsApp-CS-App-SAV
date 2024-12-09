@@ -1,0 +1,697 @@
+{% extends "base_templates/base.html" %}
+{% from "macros.jinja" import render_field_with_errors_nl %}
+
+{% block title %}{{UI_ELEMENTS_TEXT.TITLE_HOME}}{% endblock %}
+
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block body %}
+{% for msg in announcement_messages %}
+<div class="container mt-3">    
+	<div class="alert alert-{{msg.level}} alert-dismissible fade show" role="alert">
+		{{msg.message | safe}}
+				
+		<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+	</div>
+</div>
+{% endfor %}
+
+<div class="container-fluid w-90">
+	<div class="h-86vh row align-items-center">
+		<div class="row h-95 p-0">
+			<div class="msg-box col-3 px-0 bg-dark border-end border-end-1 border-light border-opacity-25 rounded-start-3 text-light">
+				<div class="mx-0 msg-header p-3 bg-secondary bg-opacity-25 row border-bottom border-bottom-1 border-light border-opacity-25">
+					<!-- <form role="search">
+						<div class="input-group input-group-sm">
+							<div class="input-group-text bg-secondary bg-opacity-75 border-0" style="color: white;"><i class="bi bi-search px-1"></i></div>
+							<input class="form-control form-control-sm border-0 bg-secondary bg-opacity-75" style="color: white;" list="phonenumberOptions" placeholder="{{UI_ELEMENTS_TEXT.MESSAGE_VIEW_SEARCH_PLACEHOLDER}}">
+						</div>
+							
+						<datalist id="phonenumberOptions">
+							<option value="+90 000 000 00 00">
+						</datalist>
+					</form> -->
+
+					<div class="btn-group">
+						<button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+						  	{{UI_ELEMENTS_TEXT.NAV_SERVER_SELECT}}
+						</button>
+						
+						<ul class="dropdown-menu dropdown-menu-dark shadow shadow-dark">
+							{% for server in MULTISERVER_SERVERS_LIST %}
+							<li><a id="multiserv-server-{{loop.index}}" class="dropdown-item" href="{{MULTISERVER_SERVERS_LIST[server]}}"><em>{{server}}</em> - <strong>(None)</strong></a></li>
+							{% else %}
+							System Error
+							{% endfor %}
+						</ul>
+
+						{% for server in MULTISERVER_SERVERS_LIST %}
+						<script>
+							var server_name = "{{server}}";
+							var socket = io.connect("{{MULTISERVER_SERVERS_LIST[server]}}/multiserver-socket");
+
+							socket.on("connect", function() 
+							{
+								console.log(`[SocketIO Multiserver] Connected to server: [${server_name}]`);
+							});
+
+							socket.on("disconnect", function() 
+							{
+								console.log(`[SocketIO Multiserver] [${server_name}] Disconnected!`);
+								$("#multiserv-server-{{loop.index}}").html("<em>{{server}}</em> - <strong>(OFFLINE)</strong>")
+							});
+
+							socket.on("unread_msgs_update", function(data) 
+							{
+								$("#multiserv-server-{{loop.index}}").html(`<em>{{server}}</em> - <strong>(${data.unread_msgs})</strong>`)
+							});
+						</script>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="msg-view overflow-y-auto overflow-x-hidden">
+					<div id="phone-view" class="list-group rounded-0 border-0">
+					</div>
+				</div>
+			</div>
+
+			<div class="col bg-dark rounded-end-3 text-light msg-box px-0">
+				<div class="m-0 w-100 msg-header p-3 bg-secondary bg-opacity-25 row border-bottom border-bottom-1 border-opacity-25 border-light">
+					<div>
+						{% if customer_id and customer_id != "NO_CHAT_PAGE" %}
+						<img src="{{url_for("static", filename="img/logos/default_pp.png")}}" width="31" height="31" class="rounded-circle me-2 pixelated">
+						<div class="d-inline fw-bold">{{display_name.title()}}</div>
+
+						{% if current_user.has_role("admin") %}
+						<button type="button" class="btn btn-sm btn-outline-warning ms-2" data-bs-toggle="modal" data-bs-target="#renameCustomerModal">{{UI_ELEMENTS_TEXT.ADMIN_RENAME_CUSTOMER}}</button>
+
+						<a href="{{url_for("delete_all_redirects_customer", customer_id=customer_id)}}" class="btn btn-sm btn-outline-danger float-end ms-2">{{UI_ELEMENTS_TEXT.ADMIN_REMOVE_ALL_REDIRECTS}}</a>
+						<button type="button" class="btn btn-sm btn-outline-info float-end" data-bs-toggle="modal" data-bs-target="#addRedirectModal">{{UI_ELEMENTS_TEXT.ADMIN_ADD_REDIRECT}}</button>
+						
+						<div class="modal fade" id="renameCustomerModal" tabindex="-1">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content text-dark">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5" id="renameCustomerModalLabel">{{UI_ELEMENTS_TEXT.ADMIN_RENAME_CUSTOMER}}</h1>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+									</div>
+									
+									<form method="post" action="{{url_for("index_msgs", customer_id=customer_id)}}">
+										<div class="modal-body">
+											{{form2.hidden_tag()}}
+
+											{{form2.new_display_name.label(class="form-label")}}
+											{{render_field_with_errors_nl(form2.new_display_name, 4, "", class="form-control rounded-3")}}
+
+    										{{render_field_with_errors_nl(form2.customer, 4, "", class="form-select rounded-3 visually-hidden")}}
+										</div>
+										
+										<div class="modal-footer">
+											{{render_field_with_errors_nl(form2.submit, 0, "floating", class="mb-1 btn btn-outline-success")}}
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal fade" id="addRedirectModal" tabindex="-1">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content text-dark">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5" id="addRedirectModalLabel">{{UI_ELEMENTS_TEXT.ADMIN_ADD_REDIRECT}}</h1>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+									</div>
+									
+									<form method="post" action="{{url_for("index_msgs", customer_id=customer_id)}}">
+										<div class="modal-body">
+											{{form.hidden_tag()}}
+
+											{{form.redirect_rule_name.label(class="form-label")}}
+											{{render_field_with_errors_nl(form.redirect_rule_name, 4, "", class="form-control rounded-3")}}
+
+											{{form.redirect_phone_number.label(class="form-label")}}
+    										{{render_field_with_errors_nl(form.redirect_phone_number, 4, "", class="form-select rounded-3")}}
+										
+											{{form.redirect_to_agent.label(class="form-label")}}
+											{{render_field_with_errors_nl(form.redirect_to_agent, 4, "", class="form-select rounded-3")}}
+										</div>
+										
+										<div class="modal-footer">
+											{{render_field_with_errors_nl(form.submit, 0, "floating", class="mb-1 btn btn-outline-success")}}
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="d-inline me-3 pt-1 float-end">
+						{% for rule in redirect_rules %}
+							{% set agent = Agent_db.query.get(rule.agent_id) %}
+							{% if loop.index == 1 %}({% endif %}{{agent.name}}{% if loop.index != len(redirect_rules) %}, {% else %}){% endif %}
+						{% endfor %}
+						</div>
+						{% endif %}
+						
+						{% else %}
+						<div class="d-inline">{{UI_ELEMENTS_TEXT.NO_MSGS_SELECT_HEADER_MSG}}</div>
+						<div class="d-inline" style="font-size: 21px;">ㅤ</div>
+						{% endif %}
+					</div>
+				</div>
+
+				<div class="msg-view d-flex flex-column-reverse overflow-auto p-4">
+					<div id="msg-msgs">
+						{% if not (customer_id and customer_id != "NO_CHAT_PAGE") %}
+						<img src="{{url_for("static", filename=WEBSITE_NAV_LOGO)}}" class="opacity-25 rounded mx-auto d-block img-fluid h-auto w-25 pb-5 mb-5" style="-webkit-filter: grayscale(100%); filter: grayscale(100%);">
+						{% endif %}
+					</div>
+				</div>
+
+				{% if customer_id and customer_id != "NO_CHAT_PAGE" %}
+				<div class="m-0 msg-compose px-3 py-2 bg-secondary bg-opacity-25 row border-top border-top-1 border-opacity-25 border-light w-100">
+					<div class="overflow-auto container">
+						<ul id="output" class="list-group list-group-horizontal overflow-auto py-2 pt-1"></ul>
+					</div>
+
+					<form class="d-flex align-items-center" id="message-form">
+						<textarea id="msgtxtarea" class="form-control d-inline border-0 bg-light bg-opacity-75 message" placeholder="{{UI_ELEMENTS_TEXT.MESSAGE_VIEW_COMPOSE_PLACEHOLDER}}"></textarea>
+						<input id="customer_id" class="customer_id" type="text" value="{{customer_id}}" hidden>
+
+						<input id="upload-button" class="files" type="file" accept="{{"." + (",.".join(ALLOWED_FILE_EXTENSIONS)) if ALLOWED_FILE_EXTENSIONS else None}}" multiple hidden>
+						<label class="label-upload-button ms-3 btn-outline-primary btn px-1 text-light" for="upload-button"><i class="h4 bi bi-paperclip"></i></label>
+						
+						<button class="ms-2 text-decoration-none text-light btn-outline-success btn px-1" type="submit"><i class="h4 bi bi-send"></i></button>
+					</form>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block end %}
+{% set scheme = HTTP_SCHEME %}
+
+<script>
+	function msg_data_to_html(data)
+	{
+		data.type = data.type.toLowerCase();
+		let body = "";
+		let media = "";
+		let status = "";
+
+
+		if (data.type === "text")
+		{
+			body = data.content.text;
+		}
+
+		else if (["document", "image", "audio", "voice", "video"].indexOf(data.type) >= 0)
+		{
+			media = `<a href="${data.content.mediaUrl}" class="text-light" target="_blank" rel="noopener noreferrer">{{UI_ELEMENTS_TEXT.MEDIA_ATTACHMENT}}</a><br>`;
+
+			if (data.content.caption)
+			{
+				body = data.content.caption;
+			}
+		}
+
+		else if (data.type === "sticker")
+		{
+			media = `<img src="${data.content.mediaUrl}" height="128" width="128"><br>`;
+		}
+
+		else if (data.type === "location")
+		{
+			if (data.content.url)
+			{
+				body = `<a href="${data.content.url}" class="text-light" target="_blank" rel="noopener noreferrer">{{UI_ELEMENTS_TEXT.LOCATION_ATTACHMENT}}</a>`;
+			}
+
+			else 
+			{
+				let maps_url = `https://www.google.com/maps/place/${data.content.latitude},${data.content.longitude}`;
+				body = `<a href="${maps_url}" class="text-light" target="_blank" rel="noopener noreferrer">{{UI_ELEMENTS_TEXT.LOCATION_ATTACHMENT}}</a>`;
+			}
+
+			if (data.content.address)
+			{
+				body = data.content.address + "<br>" + body;
+			}
+
+			if (data.content.name)
+			{
+				body = data.content.name + "<br>" + body;
+			}
+		}
+
+		else
+		{
+			body = "RENDERING ERROR: MESSAGE TYPE UNSUPPORTED!";
+		}
+
+		
+		if (body !== "")
+		{
+			body = body.replace(/\n/g, "<br>") + "<br>";
+		}
+		
+
+		if (data.status === "PENDING")
+		{
+			status = '<div class="ps-1 float-end" style="font-size: 13px;"><i class="bi bi-arrow-clockwise"></i></div>';
+		}
+
+		else if (data.status === "SENT")
+		{
+			status = '<div class="ps-1 float-end" style="font-size: 13px;"><i class="bi bi-check2-all"></i></div>';
+		}
+
+		else if (["READ", "DELIVERED"].indexOf(data.status) >= 0)
+		{
+			status = '<div class="ps-1 float-end" style="font-size: 13px;"><i class="bi bi-check2-all"></i></div>';
+		}
+
+		else if (["UNDELIVERABLE", "FAILED"].indexOf(data.status) >= 0)
+		{
+			status = '<div class="ps-1 float-end" style="font-size: 13px;"><i class="bi bi-x"></i></div>';
+		}
+
+		else
+		{
+			status = '<div class="ps-1 float-end" style="font-size: 13px;"><i class="bi bi-question"></i></div>';
+		}
+
+		let msg_dir_0_nc = 
+		'<div class="px-2 py-1 rounded rounded-3 bg-success text-break" style="max-width: 75%;">' +
+			body +
+			media +
+				
+			'<div class="d-block text-opacity-25 p-0 m-0 pt-1" style="font-size: 11px;">' +
+				data.datetime.replace(" GMT", "") +
+				status +
+			'</div>' +
+		'</div>';
+
+		let msg_dir_1_nc = 
+		'<div class="px-2 py-1 rounded rounded-3 bg-primary text-break" style="max-width: 75%;">' +
+			body +
+			media +
+				
+			'<div class="d-block text-opacity-25 p-0 m-0 pt-1" style="font-size: 11px;">' +
+				data.datetime.replace(" GMT", "") +
+			'</div>' +
+		'</div>';
+
+		let msg_dir_0 = `<div id="msg-${data.id}" class="d-flex justify-content-end mb-2">${msg_dir_0_nc}</div>`;
+		let msg_dir_1 = `<div id="msg-${data.id}" class="d-flex justify-content-start mb-2">${msg_dir_1_nc}</div>`;
+
+		return [msg_dir_0, msg_dir_1, msg_dir_0_nc, msg_dir_1_nc];
+	}
+
+	function phone_data_to_html(data)
+	{
+		let badge = "";
+
+		if (parseInt(data.unread_msgs) > 0)
+		{
+			badge = `<span class="my-auto badge bg-primary rounded-pill">${data.unread_msgs}</span>`;
+		}
+
+		let phone_num = 
+		`<a href="{{url_for("index_msgs", customer_id="")}}${data.customer_id}" class="list-group-item h-msg-user text-light d-flex justify-content-between align-items-start border-0 border-bottom border-light border-opacity-10 border-1">` +
+			'<img class="ms-1 me-1 my-auto rounded-circle" width="34" height="34" src="{{url_for("static", filename="img/logos/default_pp.png")}}">' +
+			'<div class="ms-3 me-auto">' +
+				`<div class="fw-bold">${data.display_name}</div>` +
+
+				{% if current_user.has_role("admin") %}
+				`<div class="opacity-50">${data.number}</div>` +
+				{% else %}
+				`<div class="opacity-50">${data.last_msg.substring(0, 35)}</div>` +
+				{% endif %}
+			'</div>' +
+			badge +
+		'</a>';
+
+		return phone_num;
+	}
+</script>
+
+<script>
+	async function get_pnhs()
+	{
+		const response_phn = await fetch("{{url_for("messaging.get_pns_list", _external=True, _scheme=scheme)}}");
+		var data = await response_phn.json();
+
+		$("#phone-view").html("");
+
+		for (let dataf of data)
+		{
+			$("#phone-view").append(phone_data_to_html(dataf));
+		}
+	}
+
+	get_pnhs();
+</script>
+
+{% if customer_id and customer_id != "NO_CHAT_PAGE" %}
+<script>
+	function submitOnEnter(event) 
+	{
+		if (event.which === 13 && !event.shiftKey)
+		{
+			if (!event.repeat) 
+			{
+				const newEvent = new Event("submit", {cancelable: true});
+				event.target.form.dispatchEvent(newEvent);
+			}
+	
+			event.preventDefault();
+		}
+	}
+	
+	document.getElementById("message-form").addEventListener("keydown", submitOnEnter);
+</script>
+
+<script>
+	var socket = io.connect("{{url_for("index", _external=True, _scheme=scheme)}}");
+
+	socket.on("connect", async function() 
+	{
+		console.log("[SocketIO] Connected to server.");
+
+        socket.emit("user_client_connect", 
+		{
+          	data: "User Connected",
+			customer_id: "{{customer_id}}"
+        });
+
+		const response = await fetch("{{url_for("messaging.get_msg_list", _external=True, _scheme=scheme, customer_id=customer_id)}}");
+		var data = await response.json();
+
+		for (let dataf of data)
+		{
+			let msg_html = msg_data_to_html(dataf);
+
+			if (dataf.direction === 1)
+			{
+				$("#msg-msgs").append(msg_html[0]);
+			}
+
+			else if (dataf.direction === 0)
+			{
+				$("#msg-msgs").append(msg_html[1]);
+			}
+		}
+        
+		var form = $("#message-form").on("submit", async function(e) 
+		{
+			e.preventDefault();
+
+			if (!document.getElementById("message-send-spinner"))
+			{
+				const customer_id = $("input.customer_id").val();
+				const files = $("input[type=file]")[0].files;
+				const message = $("textarea.message").val();
+
+				if (customer_id && (files.length > 0 || message !== ""))
+				{
+					const spinner = document.createElement("div");
+					spinner.classList.add("spinner-border");
+					spinner.classList.add("spinner-border-sm");
+					spinner.classList.add("ms-3");
+					spinner.setAttribute("role", "status");
+					spinner.setAttribute("id", "message-send-spinner");
+					$("#message-form").append(spinner);
+
+					var form = document.createElement("FORM");
+					form.setAttribute("id", "file_input");
+					form.setAttribute("hidden", "");
+					document.body.appendChild(form);
+					
+					var file_input = document.createElement("INPUT");
+					file_input.setAttribute("name", "files");
+					file_input.setAttribute("type", "file");
+					file_input.setAttribute("multiple", "");
+					file_input.files = files;
+
+					form.appendChild(file_input);
+
+					form.method = "POST";
+					form.action = "{{url_for("messaging.handle_file_upload")}}";
+					form.enctype = "multipart/form-data"
+					
+					const response_phn = await fetch(form.action, {method: form.method, body: new FormData(form), headers: {"X-CSRFToken": "{{csrf_token()}}"}});
+					var data = await response_phn.json();
+
+					socket.emit("client_msg_send", 
+					{
+						customer_id: customer_id,
+						files: data.files,
+						message: message
+					});
+
+					e.target.reset();
+
+					const output = document.querySelector("#output");
+					output.replaceChildren();
+				}
+			}
+        })
+    })
+    
+	socket.on("message_change", async function(msg) 
+	{
+		var phone_nums = [];
+
+		{% for num in phone_nums %}
+		phone_nums[{{loop.index - 1}}] = "{{num}}";
+		{% endfor %}
+
+
+		if (msg.client_number === "{{phone_number}}" && (msg.change === "msg_sent" || msg.change === "msg_received"))
+		{
+			const response = await fetch("{{url_for("messaging.get_msg_db_id", _external=True, _scheme=scheme, id="")}}" + msg.msg_db_id);
+			var data = await response.json();
+
+			let msg_html = msg_data_to_html(data);
+
+			if (msg.change === "msg_sent")
+			{
+				let spinner = document.getElementById("message-send-spinner")
+
+				if (spinner)
+				{
+					spinner.remove();
+				}
+
+				$("#msg-msgs").append(msg_html[0]);
+			}
+
+			if (msg.change === "msg_received")
+			{
+				$("#msg-msgs").append(msg_html[1]);
+			}
+
+			await fetch("{{url_for("index_msgs_set_read", _external=True, _scheme=scheme, customer_id=customer_id)}}");
+		}
+
+
+		else if (msg.client_number === "{{phone_number}}" && msg.change === "msg_stat_update")
+		{
+			const response = await fetch("{{url_for("messaging.get_msg_db_id", _external=True, _scheme=scheme, id="")}}" + msg.msg_db_id);
+			var data = await response.json();
+
+			let msg_html = msg_data_to_html(data);
+
+			if (data.direction === 1)
+			{
+				$("#msg-" + data.id).html(msg_html[2]);
+			}
+
+			if (data.direction === 0)
+			{
+				$("#msg-" + data.id).html(msg_html[3]);
+			}
+		}
+
+
+		{% if not current_user.has_role("admin") %}
+		if (phone_nums.includes(msg.client_number))
+		{
+		{% endif %}
+			const response = await fetch("{{url_for("messaging.get_pns_list", _external=True, _scheme=scheme)}}");
+			var data = await response.json();
+
+			$("#phone-view").html("");
+
+			for (let dataf of data)
+			{
+				$("#phone-view").append(phone_data_to_html(dataf));
+			}
+		{% if not current_user.has_role("admin") %}
+		}
+		{% endif %}
+    })
+
+	socket.on("disconnect", function() 
+	{
+        location.reload();
+    })
+</script>
+
+<script>
+	const input = document.querySelector("#upload-button");
+	const output = document.querySelector("#output");
+	
+	input.addEventListener("change", function(e) 
+	{
+		const maxSize = {{MAX_FILE_UPLOAD_SIZE_BYTES}};
+		const dt = new DataTransfer();
+
+		for (const file of e.target.files) 
+		{
+			if (file.size <= maxSize) 
+			{
+				dt.items.add(file);
+			}
+
+			else
+			{
+				alert("{{UI_ELEMENTS_TEXT.MAX_FILE_SIZE_EXCEEDED}}");
+			}
+		}
+
+		input.files = dt.files;
+
+		const target_files = e.target.files;
+		var deleted_ids = [];
+		
+		while (output.firstChild) 
+		{
+			output.removeChild(output.firstChild);
+		}
+
+		for (let i = 0; i < target_files.length; i++) 
+		{
+			const c_file = target_files[i];
+			const li = document.createElement("li");
+			const button = document.createElement("button");
+			
+			button.textContent = "X";
+			button.classList.add("ms-2");
+			button.addEventListener("click", function() 
+			{
+				li.remove();
+				var newFileList = new DataTransfer();
+				deleted_ids[deleted_ids.length] = i
+				
+				for (let k = 0; k < target_files.length; k++) 
+				{
+					if (target_files[k] !== c_file)
+					{
+						var not_deleted = true;
+
+						for (let z = 0; z < deleted_ids.length; z++)
+						{
+							if (target_files[k] === target_files[deleted_ids[z]])
+							{
+								not_deleted = false;
+							}
+						}
+
+						if (not_deleted === true)
+						{
+							newFileList.items.add(target_files[k]);
+						}
+					}
+				}
+
+				input.files = newFileList.files;
+			});
+			
+			li.textContent = target_files[i].name;
+			li.classList.add("list-group-item");
+			li.classList.add("px-1");
+			li.classList.add("py-0");
+			li.classList.add("rounded-2");
+			li.classList.add("me-2");
+			li.appendChild(button);
+			output.appendChild(li);
+		}
+	});
+</script>
+
+<script>
+	// Credit: bersling (https://stackoverflow.com/questions/37629860/automatically-resizing-textarea-in-bootstrap)
+	// Slightly reformatted
+	
+	textarea = document.getElementById("msgtxtarea");
+	textarea.style.height = 0;
+
+	function expandTextarea(id) 
+	{
+		document.getElementById(id).addEventListener("keyup", function()
+		{
+			this.style.overflow = "hidden";
+			this.style.height = 0;
+			this.style.height = this.scrollHeight + "px";
+		}, false);
+	}
+	
+	expandTextarea("msgtxtarea");
+</script>
+{% else %}
+<script>
+	var socket = io.connect("{{url_for("index", _external=True, _scheme=scheme)}}");
+
+	socket.on("connect", function() 
+	{
+		console.log("[SocketIO] Connected to server.");
+
+        socket.emit("user_client_connect", 
+		{
+          	data: "User Connected",
+			customer_id: "{{customer_id}}"
+        });
+	})
+
+	socket.on("message_change", async function(msg) 
+	{
+		phone_nums = [];
+
+		{% for num in phone_nums %}
+		phone_nums[{{loop.index - 1}}] = "{{num}}";
+		{% endfor %}
+
+
+		{% if not current_user.has_role("admin") %}
+		if (phone_nums.includes(msg.client_number))
+		{
+		{% endif %}
+			const response = await fetch("{{url_for("messaging.get_pns_list", _external=True, _scheme=scheme)}}");
+			var data = await response.json();
+
+			$("#phone-view").html("");
+
+			for (let dataf of data)
+			{
+				$("#phone-view").append(phone_data_to_html(dataf));
+			}
+		{% if not current_user.has_role("admin") %}
+		}
+		{% endif %}
+	})
+
+	socket.on("disconnect", function() 
+	{
+        location.reload();
+    })
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,72 @@
+{#  WhatsApp messaging client project     #}
+{#  Jinja 2 macros file                   #}
+{#  Written by Samyar Sadat Akhavi, 2023  #}
+{#                                        #}
+{#  Project Information                   #}
+{#  Developer:        Samyar Sadat Akhavi #}
+{#  Start Date:       09/06/2023          #}
+
+
+{# Render form field with errors (If any errors exist) #}
+{% macro render_field_with_errors(field, spacing, div_type, l_class) %}
+    <div class="form-{{div_type}} mb-{{spacing}}">
+        {{field(**kwargs) | safe}}
+        {{field.label(class=l_class) | safe}} 
+        
+        {% if field.errors %}
+        <ul class="mt-{{spacing}}">
+        {% for error in field.errors %}
+            <li>{{error}}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+
+{# Render form field with errors (If any errors exist) - No label #}
+{% macro render_field_with_errors_nl(field, spacing, div_type) %}
+    <div class="form-{{div_type}} mb-{{spacing}}">
+        {{field(**kwargs) | safe}}
+        
+        {% if field.errors %}
+        <ul class="mt-{{spacing}}">
+        {% for error in field.errors %}
+            <li>{{error}}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+
+{# Render form field errors (If any errors exist) #}
+{% macro render_field_errors(field, spacing) %}
+    {% if field and field.errors %}
+    <ul class="mb-{{spacing}}">
+    {% for error in field.errors %}
+        <li>{{error}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% endmacro %}
+
+
+{# Render form field without errors #}
+{% macro render_field(field, div_type) %}
+    <div class="form-{{div_type}}">
+        {{field(**kwargs) | safe}}
+    </div>
+{% endmacro %}
+
+
+{# Render form level errors #}
+{% macro render_form_errors(form, spacing) %} 
+    {% if form.form_errors %}
+    <ul class="mb-{{spacing}}">
+    {% for error in form.form_errors %}
+        <li>{{error}}</li>
+    {% endfor %}
+    </ul>
+    {% endif %} 
+{% endmacro %}

@@ -1,0 +1,50 @@
+{% extends "base_templates/base.html" %}
+{% from "macros.jinja" import render_field_with_errors, render_field_errors, render_field %}
+
+{% block title %}{{_("Reauthenticate")}}{% endblock %}
+
+{% block body %}
+<div class="container pt-sm-4 pt-2 pb-4">
+    <div class="p-sm-5 p-2">
+        <h2 class="fw-bold mb-0">{{_("Please Reauthenticate")}}</h2>
+    </div>
+
+    <div class="p-sm-5 p-2 pt-sm-0">
+        <form action="{{url_for_security("verify")}}{% if "next" in request.args %}?next={{request.args.next | urlencode}}{% endif %}" method="POST" name="verify_form">
+            {{verify_form.hidden_tag()}}
+            {{render_field_with_errors(verify_form.password, 3, "floating", class="form-control rounded-3", placeholder="Password")}}
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="showPassword" onclick="showPass()">
+                <label class="form-check-label" for="showPassword">{{_("Show password")}}</label>
+            </div>
+
+            {{render_field_errors(verify_form.csrf_token, 3)}}
+            {{render_field(verify_form.submit, "floating", class="w-100 mt-2 mb-2 btn btn-lg rounded-3 btn-outline-secondary", value=_("Reauthenticate"))}}
+        </form>
+    </div>
+
+    <div class="p-2 m-3"></div>
+</div>
+{% endblock %}
+
+{% block footer %}fixed-bottom{% endblock %}
+
+{% block end %}
+<script>
+    function showPass() 
+    {
+        var password = document.getElementById("password");
+
+        if (password.type === "password") 
+        {
+            password.type = "text";
+        } 
+        
+        else 
+        {
+            password.type = "password";
+        }
+    }
+</script>
+{% endblock %}

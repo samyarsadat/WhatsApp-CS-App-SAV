@@ -1,0 +1,12 @@
+<!-- Main navigation -->
+<div class="collapse navbar-collapse" id="navmenu">
+    <ul class="navbar-nav ms-auto me-4">
+        <li class="nav-item"><a href="{{url_for("index")}}" class="nav-link">{{UI_ELEMENTS_TEXT.NAV_HOME}}</a></li>
+
+        {% if current_user.has_role("admin") %}
+        <li class="nav-item"><a href="{{url_for("admin_pages.index")}}" class="nav-link">{{UI_ELEMENTS_TEXT.NAV_ACC_ADMIN}}</a></li>
+        {% endif %}
+    </ul>
+    
+    {% include "base_templates/template_modules/user_dropdown.html" %}
+</div>

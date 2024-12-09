@@ -1,0 +1,29 @@
+<!-- User dropdown -->
+{% if current_user.username %}
+<div class="dropdown text-lg-end mt-lg-0 mb-lg-0 text-start mt-4 mb-3">
+    <a href="#" class="link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+        <img src="{{url_for("static", filename=current_user.pp_url)}}" alt="{{current_user.username}}" width="32" height="32" class="rounded-circle me-1 pixelated">
+        {{current_user.username}}
+    </a>
+
+    <ul class="dropdown-menu bg-black dropdown-menu-dark mt-2">
+        <li><a href="{{url_for_security("change_password")}}" class="dropdown-item"><i class="bi bi-gear pe-2"></i>{{UI_ELEMENTS_TEXT.NAV_ACC_CHANGE_PASS}}</a></li>
+
+        {% if current_user.has_role("admin") %}
+        <li><hr class="dropdown-divider bg-light bg-opacity-25"></li>
+        <li><a href="{{url_for("admin_pages.index")}}" class="dropdown-item text-info"><i class="bi bi-command pe-2"></i>{{UI_ELEMENTS_TEXT.NAV_ACC_ADMIN}}</a></li>
+        {% endif %}
+
+        {% if current_user.has_role("developer") %}
+        <li><a href="{{url_for("developer-console.index")}}" class="dropdown-item text-info"><i class="bi bi-command pe-2"></i>Developer Con.</a></li>
+        {% endif %}
+
+        <li><hr class="dropdown-divider bg-light bg-opacity-25"></li>
+        <li><a href="{{url_for_security("logout")}}" class="dropdown-item text-warning"><i class="bi bi-box-arrow-left pe-2"></i>{{UI_ELEMENTS_TEXT.NAV_ACC_LOGOUT}}</a></li>
+    </ul>
+</div>
+{% else %}
+<div class="text-lg-end mt-lg-0 mb-lg-0 text-center mt-4 mb-3">
+    <a href="{{url_for_security("login")}}" role="button" class="btn btn-outline-light me-2">{{UI_ELEMENTS_TEXT.NAV_ACC_LOGIN}}</a>
+</div>
+{% endif %}

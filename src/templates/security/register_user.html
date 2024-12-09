@@ -1,0 +1,61 @@
+{% extends "base_templates/base.html" %}
+{% from "macros.jinja" import render_field_with_errors, render_field_errors, render_field, render_form_errors %}
+
+{% block title %}{{_("Sign-up")}}{% endblock %}
+
+{% block body %} 
+<div class="container pt-2">
+    <div class="p-sm-5 p-2">
+        <h2 class="fw-bold mb-0">{{_("Sign-up")}}</h2>
+    </div>
+            
+    <div class="p-sm-5 p-2 pt-sm-0">
+        <form action="{{url_for_security("register")}}" method="POST">
+            {{register_user_form.hidden_tag()}}
+            {{render_form_errors(register_user_form, 3)}}
+            {{render_field_with_errors(register_user_form.email, 3, "floating", class="form-control rounded-3", placeholder="Email")}}
+            
+            {% if security.username_enable %}
+                {{render_field_with_errors(register_user_form.username, 3, "floating", class="form-control rounded-3", placeholder="User")}}
+            {% endif %}
+            
+            {{render_field_with_errors(register_user_form.password, 3, "floating", class="form-control rounded-3", placeholder="Pass")}}
+            
+            {% if register_user_form.password_confirm %}
+                {{render_field_with_errors(register_user_form.password_confirm, 3, "floating", class="form-control rounded-3", placeholder="Pass")}}
+            {% endif %}
+
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" role="switch" id="showPassword" onclick="showPass()">
+                <label class="form-check-label" for="showPassword">{{_("Show password")}}</label>
+            </div>
+
+            {{render_field_errors(register_user_form.csrf_token, 3)}}
+            {{render_field(register_user_form.submit, "floating", class="w-100 mt-2 mb-2 btn btn-lg rounded-3 btn-outline-secondary", value=_("Sign-up"))}}
+        </form>
+    </div>
+
+    <div class="p-sm-3 p-4 m-3"></div>
+</div>
+{% endblock %}
+
+{% block footer %}fixed-bottom{% endblock %}
+
+{% block end %}
+<script>
+    function showPass() 
+    {
+        var password = document.getElementById("password");
+
+        if (password.type === "password") 
+        {
+            password.type = "text";
+        } 
+        
+        else 
+        {
+            password.type = "password";
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base_templates/base.html" %}
+{% from "macros.jinja" import render_field_with_errors, render_field_errors, render_field, render_form_errors %}
+
+{% block title %}{{_("Login")}}{% endblock %}
+
+{% block body %}
+<div class="container pt-sm-4 pt-2 pb-4">
+    <div class="p-sm-5 p-2">
+        <h2 class="fw-bold mb-0">{{_("Login")}}</h2>
+    </div>
+
+    <div class="p-sm-5 p-2 pt-sm-0">
+        <form action="{{url_for_security("login")}}" method="POST" name="login_user_form">
+            {{login_user_form.hidden_tag()}}
+            {{render_form_errors(login_user_form, 3)}}
+            {{render_field_with_errors(login_user_form.username, 3, "floating", class="form-control rounded-3", placeholder="Username")}}
+            {{render_field_with_errors(login_user_form.password, 3, "floating", class="form-control rounded-3", placeholder="Pass")}}
+            
+            <div class="mb-2">
+                <a href="{{url_for_security("forgot_password")}}" class="text-muted small mb-5">{{_("Forgot Password?")}}</a>
+            </div>
+
+            {{render_field_with_errors(login_user_form.remember, 2, "check", l_class="form-check-label", class="form-check-input")}}
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="showPassword" onclick="showPass()">
+                <label class="form-check-label" for="showPassword">{{_("Show password")}}</label>
+            </div>
+
+            {{render_field_errors(login_user_form.csrf_token, 3)}}
+            {{render_field(login_user_form.submit, "floating", class="w-100 mt-2 mb-2 btn btn-lg rounded-3 btn-outline-secondary", value=_("Login"))}}
+        </form>
+    </div>
+
+    <div class="p-2 m-3"></div>
+</div>
+{% endblock %}
+
+{% block footer %}fixed-bottom{% endblock %}
+
+{% block end %}
+<script>
+    function showPass() 
+    {
+        var password = document.getElementById("password");
+
+        if (password.type === "password") 
+        {
+            password.type = "text";
+        } 
+        
+        else 
+        {
+            password.type = "password";
+        }
+    }
+</script>
+{% endblock %}

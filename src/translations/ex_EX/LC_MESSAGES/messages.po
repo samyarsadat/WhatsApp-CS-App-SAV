@@ -1,0 +1,18 @@
+# Empty (example) translations for WhatsApp messaging client project.
+# Copyright (C) 2023 Samyar Sadat Akhavi
+# <>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  1.0\n"
+"Report-Msgid-Bugs-To: samyarsadat@gigawhat.net\n"
+"POT-Creation-Date: 2022-07-02 17:20+0300\n"
+"PO-Revision-Date: 2022-05-10 20:55+0300\n"
+"Last-Translator: Samyar Sadat Akhavi <samyarsadat@gigawhat.net>\n"
+"Language: ex_EX\n"
+"Language-Team: ex_EX <samyarsadat@gigawhat.net>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.1\n"
